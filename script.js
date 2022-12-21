@@ -155,7 +155,7 @@ function virtualKeyboardChromeExtension_click(key, skip) {
 				document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").focus();
 				break;
 			case "Settings":
-				window.open(chrome.extension.getURL("options.html"));
+				// window.open(chrome.extension.getURL("options.html"));
 				break;
 			case '&123':
 				virtualKeyboardChromeExtensionFormat = !virtualKeyboardChromeExtensionFormat;
@@ -600,7 +600,7 @@ function virtualKeyboardChrome_bind_input(e, autoTrigger, focusCallback, clickCa
 
 function xk_settings_load_main(response) {
 	if (response.openedFirstTime == undefined) {
-		openUrl(chrome.extension.getURL("options.html"));
+		// openUrl(chrome.extension.getURL("options.html"));
 		setting_set("openedFirstTime", "true");
 	}
 	document.getElementById('virtualKeyboardChromeExtension').className = response.smallKeyboard == "true" ? "modeS" : "";
@@ -941,7 +941,7 @@ function init_virtualKeyboardChromeExtension(firstTime) {
 												}
 												break;
 											case "openSettings":
-												window.open(chrome.extension.getURL("options.html"));
+												// window.open(chrome.extension.getURL("options.html"));
 												break;
 											case "key":
 												var k = this.getAttribute("_key");
