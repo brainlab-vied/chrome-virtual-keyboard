@@ -23,3 +23,11 @@ Planned features are:
 * Refactoring and Documenation
 
 You can also suggest new features: https://apps.xontab.com/Suggest/VirtualKeyboard/
+
+## Key for signing
+
+Sicne we modified the source code of the extension, we need a key to sign the new extension .crx. This command was used:
+
+`openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out chrome-virtual-keyboard.pem`
+
+The resulting key can be found in scripts/chrome-virtual-keyboard.pem
