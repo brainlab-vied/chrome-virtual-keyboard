@@ -15,6 +15,9 @@ PN="chrome-virtual-keyboard"
 INSTALLATION_PATH="/usr/share/chromium/extensions"
 #pushd  $DIR/../..
 
+#Generate private key
+openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ${SCRIPT_DIR}/${PN}.pem
+
 KEY="${SCRIPT_DIR}/${PN}.pem"
 VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
 EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
