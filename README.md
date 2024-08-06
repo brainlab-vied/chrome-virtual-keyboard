@@ -26,7 +26,7 @@ You can also suggest new features: https://apps.xontab.com/Suggest/VirtualKeyboa
 
 ## Key for signing
 
-Sicne we modified the source code of the extension, we need a key to sign the new extension .crx. This command was used:
+Since we modified the source code of the extension, we need a key to sign the new extension .crx. This command was used:
 
 `openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out chrome-virtual-keyboard.pem`
 
