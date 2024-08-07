@@ -44,21 +44,18 @@ var ALT_LAYOUTS = [
     {"value":"en","name":"English (QWERTY)"},
     {"value":"it","name":"Italian (QWERTY)"},
     {"value":"de","name":"German (QWERTZ)"},
-    {"value":"sl","name":"Slovenian (QWERTZ)"},
     {"value":"es","name":"Spanish (QWERTY)"},
     {"value":"ru","name":"Russian (JCUKEN)"},
     {"value":"fr","name":"French (AZERTY)"},
-    {"value":"kr","name":"Korean"},
-    {"value":"sw","name":"Swedish (QWERTY)"}
 ];
 var CAPS_LOCK = "true";
 var HW_ACCEL = "true";
 var INTELLISCROLL = "false";
 var DEFAULT_LAYOUT = "en";
-var REPEAT_LETTERS = "true";
-var SMALL_KB = "true";
+var REPEAT_LETTERS = "false";
+var SMALL_KB = "false";
 var TOGGLE_KB = "true";
-var TOUCH_EVENTS = "true";
+var TOUCH_EVENTS = "false";
 var URL_BUTTON = "false";
 
 function set_default() {
@@ -1274,6 +1271,9 @@ function vk_ajax_load_main() {
             // intelligentScroll
             if (response.intelligentScroll != undefined) {
                 intelligentScroll = response.intelligentScroll == "true";
+            }
+            else {
+                intelligentScroll = "true";
             }
 
             // autoTriggerAfter
