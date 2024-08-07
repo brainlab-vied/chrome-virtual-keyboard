@@ -5,7 +5,7 @@ window.addEventListener('load', function() {
 		});
 	}
 	document.getElementById("settings").onclick = function() {
-		window.open(chrome.extension.getURL("options.html"));
+		// window.open(chrome.extension.getURL("options.html"));
 	}
 	document.getElementById("toggleOff").onclick = function() {
 		chrome.extension.sendRequest({method: "toogleKeyboardOff"}, function(response) {
