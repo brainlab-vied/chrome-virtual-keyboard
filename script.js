@@ -234,9 +234,6 @@ function virtualKeyboardChromeExtension_click(key, skip) {
 		switch (key) {
 			case "empty":
 				break;
-			case "Url":
-				document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").focus();
-				break;
 			case "Settings":
 				// window.open(chrome.extension.getURL("options.html"));
 				break;
@@ -538,7 +535,7 @@ function virtualKeyboardChromeExtension_open(posY, posX, force) {
         } else {
             document.body.appendChild(virtualKeyboardChromeExtensionKeyboardElement);
         }
-        if ((virtualKeyboardChromeExtensionKeyboardEnabled == "demand") && (force == undefined) && (virtualKeyboardChromeExtensionClickedElem.id != "virtualKeyboardChromeExtensionUrlBarTextBox")) {
+        if ((virtualKeyboardChromeExtensionKeyboardEnabled == "demand") && (force == undefined)) {
             virtualKeyboardChromeExtensionClickedElemDemand = virtualKeyboardChromeExtensionClickedElem;
             if (posX == undefined) { posX = virtualKeyboardChromeExtension_getElementPositionX(virtualKeyboardChromeExtensionClickedElem); }
             if (posY == undefined) { posY = virtualKeyboardChromeExtension_getElementPositionY(virtualKeyboardChromeExtensionClickedElem); }
@@ -767,40 +764,6 @@ function init_virtualKeyboardChromeExtension(firstTime) {
                     //chrome.extension.sendRequest({ method: "loadKeyboardSettings" }, xk_settings_load_main);
                 }
             } else {
-                document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").onblur = function () {
-                    document.getElementById('virtualKeyboardChromeExtensionUrlBar').style.top = "-100px";
-                    if (document.getElementById("urlButton") !== null) {
-                        document.getElementById("urlButton").setAttribute("highlight", "");
-                    }
-                    virtualKeyboardChromeExtension_generate_onchange();
-                    virtualKeyboardChromeExtensionClickedElem = undefined;
-                    virtualKeyboardChromeExtensionCloseTimer = setTimeout(function () {
-                        virtualKeyboardChromeExtension_click('Close');
-                    }, 1000);
-                };
-                document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").onfocus = function (evt) {
-                    if (virtualKeyboardChromeExtensionCloseTimer != undefined) { clearTimeout(virtualKeyboardChromeExtensionCloseTimer); }
-                    virtualKeyboardChromeExtensionElemType = "input";
-                    virtualKeyboardChromeExtensionClickedElem = document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox");
-                    document.getElementById('virtualKeyboardChromeExtensionUrlBar').style.top = "0px";
-                    if (document.getElementById("urlButton") !== null) {
-                        document.getElementById("urlButton").setAttribute("highlight", "true");
-                    }
-                    if (!virtualKeyboardChromeExtensionState) {
-                        virtualKeyboardChromeExtension_open(0, 0, true);
-                        document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").focus();
-                        virtualKeyboardChromeExtension_inputTypesRender();
-                        setTimeout(function () {
-                            if (document.getElementById("urlButton") !== null) {
-                                document.getElementById("urlButton").setAttribute("highlight", "true");
-                            }
-                        }, 500);
-                    }
-                    evt.preventDefault();
-                };
-                document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").addEventListener("click", vk_evt_input_click, false);
-                document.getElementById("virtualKeyboardChromeExtensionUrlBarTextBox").setAttribute("_vkEnabled", "true");
-
                 if (document.getElementById("urlButton") !== null) {
                     document.getElementById("urlButton").style.display = virtualKeyboardChromeExtensionUrlButton == "true" ? "" : "none";
                 }
