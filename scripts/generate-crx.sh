@@ -82,7 +82,14 @@ openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ${KEY}
 VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
 EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
 
-# TODO: version string validation
+# Version string validation, must either contain "dev" or be formatted as "major.minor.patch_blxx" (see README)
+REGEX_VERSION_BL='^\d+\.\d+\.\d+_bl\d{2}$'
+if [[ "$VERSION" == *"dev"* ]] || [[ "$VERSION" =~ $REGEX_VERSION_BL ]]; then
+    echo "Found version ${VERSION}"
+else
+    echo "Version ${VERSION} malformed, see README!"
+    exit 1
+fi
 
 # Generate a disposable temp public key
 openssl rsa -pubout -outform DER < "$KEY" > "$TARGET_PUB" 2>/dev/null
