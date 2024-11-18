@@ -20,13 +20,14 @@
 
 usage() {
     local script=$(basename "$0")
-    echo "Usage ${script} [PN] [INSTALLATION_PATH]"
+    echo "Usage ${script} [PN] [INSTALLATION_PATH] [BUILDDIR]"
     echo "PN: for example 'chromium-cirtual-keyboard'"
     echo "INSTALLATION_PATH: the placement of the crx file on the rootfs of the device, example: '/usr/share/chromium/extensions'"
+    echo "BUILDDIR: the folder name where to build inside, folder is created at repo top level"
 }
 
 # Input parameters
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Wrong usage!"
     usage
     exit 1
@@ -34,6 +35,7 @@ fi
 
 PN=${1}
 INSTALLATION_PATH=${2}
+BUILDDIR=${3}
 
 if [ -z "${PN}" ]; then
     echo "Missing PN variable!"
@@ -45,13 +47,17 @@ if [ -z "${INSTALLATION_PATH}" ]; then
     exit 1
 fi
 
+if [ -z "${BUILDDIR}" ]; then
+    echo "Missing BUILDDIR variable!"
+    exit 1
+fi
+
 # Run this script from repo top level
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 pushd ${SCRIPT_DIR}/../
 
-# Create build directory
-BUILDDIR="build"
-mkdir -p ${BUILDDIR}
+# Builddir on top level repo
+mkdir -p $(basename ${BUILDDIR})
 
 # Generated (partly intermediate) files
 TARGET_ZIP="${BUILDDIR}/${PN}.zip"
@@ -75,7 +81,6 @@ openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ${KEY}
 # CRX metadata
 VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
 EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
-echo "Create crx file for: '$PN' with extension id '$EXTENSION_ID' in version '$VERSION'"
 
 # TODO: version string validation
 
@@ -88,6 +93,7 @@ byte_swap () {
 }
 
 ## Create crx file
+echo "Create crx file for: '$PN' with extension id '$EXTENSION_ID' in version '$VERSION'"
 
 crx_id="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | sed 's/../\\x&/g')"
 (
@@ -157,5 +163,3 @@ echo "    \"external_version\": \"${VERSION}\"" >> ${PREFERENCE_FILE}
 echo "}" >> ${PREFERENCE_FILE}
 
 popd
-
-# TODO: return EXTENSION_ID

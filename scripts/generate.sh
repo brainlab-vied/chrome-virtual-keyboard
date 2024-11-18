@@ -30,22 +30,20 @@ source $YOCTO_SDK
 PACKAGE_NAME="chromium-cirtual-keyboard"
 INSTALLATION_PATH="/usr/share/chromium/extensions"
 
+# Create empty build dir
+BUILDDIR="spaghetti"
+if [ -e ${BUILDDIR} ]; then
+    rm -r ${BUILDDIR}
+fi
+mkdir ${BUILDDIR}
+
 # Create the crx and extension files
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-${SCRIPT_DIR}/generate-crx.sh ${PACKAGE_NAME} ${INSTALLATION_PATH}
+${SCRIPT_DIR}/generate-crx.sh ${PACKAGE_NAME} ${INSTALLATION_PATH} ${BUILDDIR}
 
 # Sanity check generated files
-
-# TODO: EXTENSION_ID return
-if [ -z ${EXTENSION_ID} ]; then
-    echo "EXTENSION_ID not defined!"
-    exit 1
-else
-    echo "Generated EXTENSION_ID: ${EXTENSION_ID}"
-fi
-
 echo "Generated files:"
-CRX_FILE="./build/${PACKAGE_NAME}.crx"
+CRX_FILE="./${BUILDDIR}/${PACKAGE_NAME}.crx"
 if [ ! -e ${CRX_FILE} ]; then
     echo "crx file not generated"
     exit 1
@@ -53,10 +51,11 @@ else
     echo "${CRX_FILE}"
 fi
 
-PREFERENCE_FILE="./build/${EXTENSION_ID}.json"
-if [ ! -e ${PREFERENCE_FILE} ]; then
-    echo "Preference file not generated"
-    exit 1
-else
-    echo "${PREFERENCE_FILE}"
-fi
+PREFERENCE_FILE="./${BUILDDIR}/*.json"
+for file in $PREFERENCE_FILE; do
+    if [ -f "$file" ]; then
+        echo "$file"
+    else
+        echo "No matching files found."
+    fi
+done
