@@ -31,7 +31,7 @@ PACKAGE_NAME="chromium-cirtual-keyboard"
 INSTALLATION_PATH="/usr/share/chromium/extensions"
 
 # Create empty build dir
-BUILDDIR="spaghetti"
+BUILDDIR="build"
 if [ -e ${BUILDDIR} ]; then
     rm -r ${BUILDDIR}
 fi
