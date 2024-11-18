@@ -1,50 +1,62 @@
 #!/bin/bash -e
 
-# Generate a crx file and preference file for the chromium plugin.
-#
-# This is a wrapper script for local usage on a developer PC,
-# it calls the nested generate-*.sh scripts.
-# Required tools are sourced from the Yocto SDK.
-#
-# This script is also a reference for Yocto builds on the environment
-# they have to setup before calling the nested scripts.
+# Wrapper for generate-crx.sh to be used on local developer PC
+# Use the yocto sdk to setup an env, thenn build the crx file.
 
 # Source the Yocto SDK
-# TODO do it like other repos
-source /home/martin/workspace/master-builds/k26-product/image/sdk/environment-setup-cortexa72-cortexa53-brainlab-linux
+script=$(basename "$0")
+if [ "$#" -ne 1 ]; then
+    if [[ -z "${YOCTO_SDK_BASE}" ]]; then
+        echo "YOCTO_SDK_BASE not defined. Usage $script <yocto sdk base>"
+        exit 1
+    else
+        MY_YOCTO_SDK_BASE=$(realpath ${YOCTO_SDK_BASE})
+    fi
+else
+    MY_YOCTO_SDK_BASE=$(realpath ${1})
+fi
 
-# Reference plugin scripts relative to the location of this script
+if [ -f "$MY_YOCTO_SDK_BASE/environment-setup-cortexa72-cortexa53-brainlab-linux" ]; then
+    YOCTO_SDK="$MY_YOCTO_SDK_BASE/environment-setup-cortexa72-cortexa53-brainlab-linux"
+elif [ -f "$MY_YOCTO_SDK_BASE/environment-setup-aarch64-brainlab-linux" ]; then
+    YOCTO_SDK="$MY_YOCTO_SDK_BASE/environment-setup-aarch64-brainlab-linux"
+else
+    echo "YOCTO_SDK_BASE no environment-setup available."
+    exit 1
+fi
+source $YOCTO_SDK
+
+# Setup build parameter
+PACKAGE_NAME="chromium-cirtual-keyboard"
+INSTALLATION_PATH="/usr/share/chromium/extensions"
+
+# Create the crx and extension files
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+${SCRIPT_DIR}/generate-crx.sh ${PACKAGE_NAME} ${INSTALLATION_PATH}
 
-# Create the crx file using a nested script
-# Use source command so that internal variables are avaible.
-# TODO: this will break in yocto.
-export PN="chrome-virtual-keyboard"
-source ${SCRIPT_DIR}/generate-crx.sh
+# Sanity check generated files
 
-# Validate expected script output
-CRXFN="${PN}.crx"
-if [ ! -e ./build/${CRXFN} ]; then
-    echo "${CRXFN} file not generated"
+# TODO: EXTENSION_ID return
+if [ -z ${EXTENSION_ID} ]; then
+    echo "EXTENSION_ID not defined!"
     exit 1
+else
+    echo "Generated EXTENSION_ID: ${EXTENSION_ID}"
 fi
 
-if [ -z "${EXTENSION_ID}" ]; then
-    echo "EXTENSION_ID was not defined"
+echo "Generated files:"
+CRX_FILE="./build/${PACKAGE_NAME}.crx"
+if [ ! -e ${CRX_FILE} ]; then
+    echo "crx file not generated"
     exit 1
+else
+    echo "${CRX_FILE}"
 fi
 
-# Creeate the extension preference file
-export EXTENSION_ID
-export INSTALLATION_PATH="/usr/share/chromium/extensions"
-export CRXFN
-${SCRIPT_DIR}/generate-preference-file.sh
-
-# Validate expected script output
-PREFERENCEFN="${EXTENSION_ID}.json"
-if [ ! -e ./build/${PREFERENCEFN} ]; then
-    echo "${PREFERENCEFN} file not generated"
+PREFERENCE_FILE="./build/${EXTENSION_ID}.json"
+if [ ! -e ${PREFERENCE_FILE} ]; then
+    echo "Preference file not generated"
     exit 1
+else
+    echo "${PREFERENCE_FILE}"
 fi
-
-exit 0

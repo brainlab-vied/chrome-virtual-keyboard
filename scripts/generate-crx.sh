@@ -2,36 +2,58 @@
 
 # Package the chrome extension into a crx file.
 # Use a disposable temp key for plugin signing.
-# Export the EXTENSION_ID to environment.
+# Return the EXTENSION_ID as generated output.
+#
+# Create a preference file for the extension,
+# which triggers plugin auto installation.
 #
 # This script assumes that it is called either from
 # generate.sh in this repo, or from within Yocto.
-# Meaning build tools are available from env,
-# either by sourcing yocto sdk first,
-# or calling this script from within a yocto build env.
+# Meaning the build tools are available from env,
+# either by sourcing SDK or from yocto build sysroot.
+#
+# How to create a chromium plugin crx:
+# http://www.dre.vanderbilt.edu/~schmidt/android/android-4.0/external/chromium/chrome/common/extensions/docs/crx.html
+# https://gromnitsky.blogspot.com/2019/04/crx3.html
+# https://github.com/ahwayakchih/crx3/blob/master/lib/crx3.proto
+# https://github.dev/pawliczka/CRX3-Creator/blob/6aa7d583dc28b2845cd59b14c3ac3e2041aa5379/main.py#L159
 
-# Expected defines from outside
-if [ -z "${PN}" ]; then
-    echo "Please define PN (package name) variable first!"
+usage() {
+    local script=$(basename "$0")
+    echo "Usage ${script} [PN] [INSTALLATION_PATH]"
+    echo "PN: for example 'chromium-cirtual-keyboard'"
+    echo "INSTALLATION_PATH: the placement of the crx file on the rootfs of the device, example: '/usr/share/chromium/extensions'"
+}
+
+# Input parameters
+if [ "$#" -ne 2 ]; then
+    echo "Wrong usage!"
+    usage
     exit 1
 fi
 
-# Reference plugin sources relative to the location of this script
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+PN=${1}
+INSTALLATION_PATH=${2}
 
-# Create build directory from current location and switch there
+if [ -z "${PN}" ]; then
+    echo "Missing PN variable!"
+    exit 1
+fi
+
+if [ -z "${INSTALLATION_PATH}" ]; then
+    echo "Missing INSTALLATION_PATH variable!"
+    exit 1
+fi
+
+# Run this script from repo top level
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+pushd ${SCRIPT_DIR}/../
+
+# Create build directory
 BUILDDIR="build"
 mkdir -p ${BUILDDIR}
 
-# Generate a disposable temp private key
-KEY="${BUILDDIR}/${PN}.pem"
-openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ${KEY}
-
-VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
-EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
-echo "Create crx file for: '$PN' with extension id '$EXTENSION_ID' in version '$VERSION'"
-
-# Generated (intermediate) files
+# Generated (partly intermediate) files
 TARGET_ZIP="${BUILDDIR}/${PN}.zip"
 TARGET_SIG="${BUILDDIR}/${PN}.sig"
 TARGET_PUB="${BUILDDIR}/${PN}.pub"
@@ -42,13 +64,20 @@ TARGET_SD="${BUILDDIR}/${PN}.sd"
 TARGET_DD="${BUILDDIR}/${PN}.dd"
 TARGET_CRX="${BUILDDIR}/${PN}.crx"
 
-#http://www.dre.vanderbilt.edu/~schmidt/android/android-4.0/external/chromium/chrome/common/extensions/docs/crx.html
-#https://gromnitsky.blogspot.com/2019/04/crx3.html
-#https://github.com/ahwayakchih/crx3/blob/master/lib/crx3.proto
-#https://github.dev/pawliczka/CRX3-Creator/blob/6aa7d583dc28b2845cd59b14c3ac3e2041aa5379/main.py#L159
-
 # Zip the plugin sources
-zip -q -r -9 -X ${TARGET_ZIP} buttons icons layouts options _config.yaml background.js keyboard.html keyboard.png LICENSE manifest.json options.html README.md script.js style.css toggle.html toggle.js
+# TODO: error handling if file is missing?
+zip -r -9 -X ${TARGET_ZIP} buttons icons layouts options _config.yaml background.js keyboard.html keyboard.png LICENSE manifest.json options.html README.md script.js style.css toggle.html toggle.js
+
+# Generate a disposable temp private key
+KEY="${BUILDDIR}/${PN}.pem"
+openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ${KEY}
+
+# CRX metadata
+VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
+EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
+echo "Create crx file for: '$PN' with extension id '$EXTENSION_ID' in version '$VERSION'"
+
+# TODO: version string validation
 
 # Generate a disposable temp public key
 openssl rsa -pubout -outform DER < "$KEY" > "$TARGET_PUB" 2>/dev/null
@@ -57,6 +86,8 @@ byte_swap () {
     # Take "abcdefgh" and return it as "ghefcdab"
     echo "${1:6:2}${1:4:2}${1:2:2}${1:0:2}"
 }
+
+## Create crx file
 
 crx_id="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | sed 's/../\\x&/g')"
 (
@@ -99,6 +130,12 @@ hd_len_hex=$(byte_swap $(printf '%08x\n' $(ls -l "$TARGET_HD" | awk '{print $5}'
 ) > "$TARGET_CRX"
 echo "Wrote $TARGET_CRX"
 
+if [ ! -e ${TARGET_CRX} ]; then
+    echo "Failed to create crx file"
+    exit 1
+fi
+
+# cleanup intermediate files
 rm ${TARGET_ZIP}
 rm ${TARGET_SIG}
 rm ${TARGET_PUB}
@@ -108,7 +145,17 @@ rm ${TARGET_HD}
 rm ${TARGET_PM}
 rm ${TARGET_PM2}
 
-if [ ! -e ${TARGET_CRX} ]; then
-    echo "Failed to create crx file"
-    exit 1
-fi
+## Create preference file
+
+PREFERENCE_FILE_NAME="${EXTENSION_ID}.json"
+PREFERENCE_FILE="${BUILDDIR}/${PREFERENCE_FILE_NAME}"
+
+# Create the preference file
+echo "{" > ${PREFERENCE_FILE}
+echo "    \"external_crx\": \"${INSTALLATION_PATH}/${PN}.crx\"," >> ${PREFERENCE_FILE}
+echo "    \"external_version\": \"${VERSION}\"" >> ${PREFERENCE_FILE}
+echo "}" >> ${PREFERENCE_FILE}
+
+popd
+
+# TODO: return EXTENSION_ID
