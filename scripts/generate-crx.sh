@@ -2,7 +2,6 @@
 
 # Package the chrome extension into a crx file.
 # Use a disposable temp key for plugin signing.
-# Return the EXTENSION_ID as generated output.
 #
 # Create a preference file for the extension,
 # which triggers plugin auto installation.

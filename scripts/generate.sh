@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # Wrapper for generate-crx.sh to be used on local developer PC
-# Use the yocto sdk to setup an env, thenn build the crx file.
+# Use the yocto sdk to setup an env, then build the crx file.
 
 # Source the Yocto SDK
 script=$(basename "$0")
