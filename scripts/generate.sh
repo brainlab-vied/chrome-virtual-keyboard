@@ -57,5 +57,6 @@ for file in $PREFERENCE_FILE; do
         echo "$file"
     else
         echo "No matching files found."
+        exit 1
     fi
 done
