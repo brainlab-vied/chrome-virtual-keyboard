@@ -70,7 +70,7 @@ TARGET_DD="${BUILDDIR}/${PN}.dd"
 TARGET_CRX="${BUILDDIR}/${PN}.crx"
 
 # Zip the plugin sources
-zip -r -9 -X ${TARGET_ZIP} buttons icons layouts options _config.yaml background.js keyboard.html keyboard.png LICENSE manifest.json options.html README.md script.js style.css toggle.html toggle.js
+zip -r -9 -X ${TARGET_ZIP} buttons icons layouts options background.js keyboard.html keyboard.png LICENSE manifest.json options.html README.md script.js style.css toggle.html toggle.js
 
 # Generate a disposable temp private key
 KEY="${BUILDDIR}/${PN}.pem"
