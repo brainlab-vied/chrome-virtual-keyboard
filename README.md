@@ -36,16 +36,23 @@ For automating the generation of the crx file, the [crx3.proto](./scripts/crx3.p
 https://github.com/pawliczka/CRX3-Creator
 
 ## Version tagging
-As this is a fork, but we also have to define version numbers, we introduce the following convention for Brainlab created versions:
+As this is a fork, but we also have to define version numbers, we introduce an extra convention for Brainlab created versions. The version numbering must adhere the rules for chrome extensions, see [Manifest - Version](https://developer.chrome.com/docs/extensions/reference/manifest/version).
+
 ~~~shell
-major.minor.patch_blxx
+major.minor.patch.brainlab
 ~~~
 Where:
-- *major.minor.patch* refers to the version of the upstream project we are based upon
-- *blxx* refers to "Brainlab version XX"
+- *major.minor.patch* refers to the version of the upstream project on which we are based upon
+- *brainlab* refers to a version indicator for brainlab changes
 
 Example:
-- 1.12.8_bl01
+> 1.12.8.0 - the first brainlab release based upon upstream 1.12.8
+
+Also we use the manifest field *version_name* to describe the version with a short string:
+~~~json
+  "version": "1.12.8.0",
+  "version_name": "1.12.8 brainlab release 0"
+~~~
 
 ## CRX file generation
 The crx generation is automated by scripts.

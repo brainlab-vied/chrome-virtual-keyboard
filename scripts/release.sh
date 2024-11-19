@@ -5,19 +5,28 @@
 script=$(basename "$0")
 if [ "$#" -ne 1 ]; then
     echo "Create a release by setting a git release tag onto master branch"
-    echo "Usage $script <x.y.z_blxx>"
-    echo "<x.y.z_blxx> - release version string, see README"
+    echo "Usage $script <major.minor.patch.brainlab>"
+    echo "<major.minor.patch.brainlab> - release version string, see README"
     exit 1
 fi
 
 # Input validation
 version_full=$1
 
-REGEX_VERSION_BL='^[0-9]+\.[0-9]+\.[0-9]+_bl[0-9]{2}$'
+REGEX_VERSION_BL='^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
 if [[ "$version_full" =~ $REGEX_VERSION_BL ]]; then
-    echo "Found version ${version_full}"
+    echo "Expected version: ${version_full}"
 else
     echo "Version ${version_full} malformed, see README!"
+    exit 1
+fi
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+VERSION_MANIFEST="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | tr -d '",')"
+echo "Manifest version: ${VERSION_MANIFEST}"
+
+if [[ "$version_full" != "$VERSION_MANIFEST" ]]; then
+    echo "Expected version (from input parameter) missmatches manifest version!"
     exit 1
 fi
 
