@@ -13,7 +13,7 @@ fi
 # Input validation
 version_full=$1
 
-REGEX_VERSION_BL='^\d+\.\d+\.\d+_bl\d{2}$'
+REGEX_VERSION_BL='^[0-9]+\.[0-9]+\.[0-9]+_bl[0-9]{2}$'
 if [[ "$version_full" =~ $REGEX_VERSION_BL ]]; then
     echo "Found version ${version_full}"
 else
