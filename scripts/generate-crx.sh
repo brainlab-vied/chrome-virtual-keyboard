@@ -81,7 +81,7 @@ VERSION="$(grep '"version"' ${SCRIPT_DIR}/../manifest.json | awk '{print $2}' | 
 EXTENSION_ID="$(cat ${KEY} | openssl rsa -pubout -outform DER | openssl dgst -sha256 | awk '{print $2}' | cut -c 1-32 | tr '0-9a-f' 'a-p')"
 
 # Version string validation, must either contain "dev" or be formatted as "major.minor.patch_blxx" (see README)
-REGEX_VERSION_BL='^\d+\.\d+\.\d+_bl\d{2}$'
+REGEX_VERSION_BL='^[0-9]+\.[0-9]+\.[0-9]+_bl[0-9]{2}$'
 if [[ "$VERSION" == *"dev"* ]] || [[ "$VERSION" =~ $REGEX_VERSION_BL ]]; then
     echo "Found version ${VERSION}"
 else
