@@ -11,6 +11,10 @@
 # Meaning the build tools are available from env,
 # either by sourcing SDK or from yocto build sysroot.
 #
+# Note: this script exists in multiple chrome extension
+# repos, however each copy contains subtle differences!
+# Read the diff carefully!
+#
 # How to create a chromium plugin crx:
 # http://www.dre.vanderbilt.edu/~schmidt/android/android-4.0/external/chromium/chrome/common/extensions/docs/crx.html
 # https://gromnitsky.blogspot.com/2019/04/crx3.html
