@@ -16,7 +16,9 @@ fi
 pushd  $DIR/..
 
 VERSION="$(grep '"version"' manifest.json | awk '{print $2}' | tr -d '",')"
-BUILD_DIR="release/${VERSION}"
+BUILD_DIR="build"
+PACKAGE_NAME="chromium-cirtual-keyboard"
+INSTALLATION_PATH="/usr/share/chromium/extensions"
 
 
 echo "Copy deploy directory to XU9 tmp"
@@ -40,11 +42,18 @@ ${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"rm -r
 ${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"mkdir -p /data/settings/chromium\""
 
 echo "Copying extension..."
-${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SCP_BASE_COMMAND} -r /tmp/${VERSION}/* root@${K26_IP}:/usr/share/chromium/extensions"
+# Delete old versions
+${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"rm -f ${INSTALLATION_PATH}/${PACKAGE_NAME}.*\""
+${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"find ${INSTALLATION_PATH}/*.json -type f -exec grep -q -F '${PACKAGE_NAME}' {} \; -exec rm -f {} +\""
+# Copy new version
+${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SCP_BASE_COMMAND} -r /tmp/${BUILD_DIR}/* root@${K26_IP}:${INSTALLATION_PATH}"
 
 echo "Enabling systemd services..."
 ${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"sync\""
 ${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"mount -o remount,ro / \""
 ${SSH_BASE_COMMAND} root@${MY_BV_IP} "${SSH_BASE_COMMAND} root@${K26_IP} \"systemctl start chromium\""
+
+# Clean uo xu9
+${SSH_BASE_COMMAND} root@${MY_BV_IP} "rm -r /tmp/${BUILD_DIR}"
 
 popd
