@@ -10,12 +10,16 @@ assignees: ''
 <!--- Provide a general summary of your changes in the Title above but don't remove the prefix tag -->
 
 **Please check if the PR fulfills these requirements**
-- [ ] The commit message follows our guidelines
-- [ ] The coding style adheres to the code style guide for this repository
-- [ ] Docs have been added / updated
-- [ ] The changes have been tested
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] Existing unit tests pass locally with my changes (where existing tests are too sparse I manually tested)
 - [ ] This PR does not introduce any breaking changes
 - [ ] This PR does not change any code behavior
+
+
+
 
       
 ## Description
