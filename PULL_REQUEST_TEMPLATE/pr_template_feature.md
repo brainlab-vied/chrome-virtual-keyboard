@@ -1,7 +1,7 @@
 ---
 name: New Feature Pull Request
 about: Add a new feature
-title: "[feature] "
+title: "[Feature] "
 labels: feature
 assignees: ''
 
