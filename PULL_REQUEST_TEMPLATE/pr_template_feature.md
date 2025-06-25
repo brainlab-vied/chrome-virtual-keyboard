@@ -1,4 +1,3 @@
-
 ---
 name: New Feature Pull Request
 about: Add a new feature
