@@ -1,8 +1,8 @@
 ---
 name: Documentation Pull request
 about: Add or update documentation for the codebase
-title: "[documentation] "
-labels: doc
+title: "[Doc] "
+labels: documentation
 assignees: ''
 
 ---
