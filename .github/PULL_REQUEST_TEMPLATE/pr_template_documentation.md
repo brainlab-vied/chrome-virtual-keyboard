@@ -1,13 +1,4 @@
----
-name: Documentation Pull request
-about: Add or update documentation for the codebase
-title: "[Doc] "
-labels: documentation
-assignees: ''
-
----
-
-<!--- Provide a general summary of your changes in the Title above but don't remove the prefix tag -->
+<!--- Provide a general summary of your changes in the Title above and please add a [Doc] prefix -->
 
 **Please check if the PR fulfills these requirements**
 - [ ] I have performed a self-review of my changes

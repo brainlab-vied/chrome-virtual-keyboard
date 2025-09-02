@@ -1,13 +1,4 @@
----
-name: Bug fix pull request
-about: Fix a known bug in the repository
-title: "[Bug] "
-labels: bugfix
-assignees: ''
-
----
-
-<!--- Provide a general summary of your changes in the Title above but don't remove the prefix tag -->
+<!--- Provide a general summary of your changes in the Title above and please add a [Bug] prefix -->
 
 **Please check if the PR fulfills these requirements**
 - [ ] My code follows the style guidelines of this project

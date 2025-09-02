@@ -1,13 +1,4 @@
----
-name: Cleanup/Refactor Pull request
-about: Cleanup or refactor the codebase
-title: "[Cleanup] "
-labels: cleanup
-assignees: ''
-
----
-
-<!--- Provide a general summary of your changes in the Title above but don't remove the prefix tag -->
+<!--- Provide a general summary of your changes in the Title above and please add a [Cleanup] prefix -->
 
 **Please check if the PR fulfills these requirements**
 - [ ] My code follows the style guidelines of this project

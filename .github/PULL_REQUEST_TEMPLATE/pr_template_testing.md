@@ -1,13 +1,4 @@
----
-name: Test coverage Pull Request
-about: Add or update tests
-title: "[Testing] "
-labels: testing
-assignees: ''
-
----
-
-<!--- Provide a general summary of your changes in the Title above but don't remove the prefix tag -->
+<!--- Provide a general summary of your changes in the Title above and please add a [Testing] prefix  -->
 
 **Please check if the PR fulfills these requirements**
 - [ ] My code follows the style guidelines of this project
