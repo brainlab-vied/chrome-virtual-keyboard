@@ -1,0 +1,11 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match which narrows the focus to a 
+# type of file or a directory takes precedence. This file is 
+# in the same format as the .gitignore file. 
+# Note: the first name is the primary owner, all following names
+# are secondary owners and should adhere to the commonly understood
+# guidelines for secondary owners.
+*       @lars-kipferl-snke @max-winkel-snke
